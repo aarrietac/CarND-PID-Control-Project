@@ -5,20 +5,15 @@ Self-Driving Car Engineer Nanodegree Program
 
 ### P: proporcional component
 
-This part use the error of the input variable to compute the control signal. In this project the control signal is the steer angle (hand wheel) and the input is the cross-track-error (cte).
-Then, a proper proporcinal gain must be chosen. In the simulator, we can estimate the maximum lateral error (cte) to 5-6 meters approximately. The maximum control signal (steer angle) must be 
-between -1 to +1. Therefore, a good approximation for the proporcional gain (Kp) would be 1/5 or 0.2. A important note here, is that this value work pretty well for low speeds (< 30mph), but 
-for high speed the CTE change very fast do to the speed of the vehicle. So, it is necessary to scale Kp in order to maintain the control signal in a proper region. Doing test in the simulator, 
-a Kp = 0.02 was considered for high speeds.
+This part uses the error of the input variable to compute the control signal. In this project the control signal is the steer angle (hand wheel) and the input is the cross-track-error (CTE). Then, a proper proporcional gain must be chosen. In the simulator, we can estimate the maximum lateral error (CTE) to 5-6 meters approximately. The maximum control signal (steer angle) must be between -1 to +1. Therefore, a good approximation for the proporcional gain (Kp) would be 1/5 or 0.2. A important note here is that this value work pretty well for low speeds (< 30mph), but for high speed the CTE change very fast do to the speed of the vehicle. So, it is necessary to scale Kp in order to maintain the control signal in a proper region. Doing test in the simulator, a Kp = 0.02 was considered for high speeds.
 
 ### I: integral component
 
-The idea of this component is to reduce the steady-state error. Bassically, the interal part compute the error over time. So, generally the integral part is bigger than the CTE or CTE/dt in 
-the steady-state condition. In my implementation, a small integral gain (Ki = 0.004) was chosen because the diference in order of magnitude comparing to CTE and CTE/dt.
+The idea of this component is to reduce the steady-state error. Bassically, the interal part compute the error over time. Generally, the integral part is bigger than the CTE or CTE/dt in the steady-state condition. In my implementation, a small integral gain (Ki = 0.004) was chosen because the diference in order of magnitude comparing to CTE and CTE/dt.
 
 ### D: derivative component
 
-This part of the controller try to stabilize the control signal. In oder words, it compensate the proporcional part if this pass the reference signal. In the example shown by Sebastian in the lessons, this component react to an execive proporcional signal reduing it in order to stabilize the control signal. The derivative gain (Kd) was chosen taking into consideration the difference in order of magnitude obtaned from simulation at high speed. Therefore, the Kd must be from 10 to 100 time bigger than the Kp. Then, doing simulations and change the parameters to make the lap properly, I found the correct derivative gain to Kd = 1.2.
+This part of the controller try to stabilize the control signal. In oder words, it compensate the proporcional part if this pass the reference signal. In the example shown by Sebastian in the lessons, this component react to an execive proporcional signal, reducing it in order to stabilize the system under control. The derivative gain (Kd) was chosen taking into consideration the difference in order of magnitude obtained from simulation at high speeds. Thus the Kd must be from 10 to 100 time bigger than the Kp. Then, doing simulations and change the parameters to make the lap properly, I found the correct derivative gain to Kd = 1.2.
 
 ## Final consideration for the PID
 
@@ -28,7 +23,7 @@ The final tunned hyper-parameters for my PID implementation are:
 * Ki = 0.004
 * Kd = 1.2
 
-Taking these values for the PID controller the vehicle is able to make the lap properly. Nevertheless, there are some part in the track that the vehicle oscillates. That would be higher values for the CTE/dt due to the fast change in the CTE in a small period (high velocities). In order to compensate this, a emergency braking controller was implemented. This controller take into consideration the spped, CTE and steer angle in order to brake and stabilize the vehicle. In addition, a PID controller was implemented to control the speed of the car taking into consideration a reference speed. In this work a reference speed was set to 60 mph. The PID parameters of the speed controller were chosen properly and then normalized to [0 - 1] values.
+Taking these values for the PID controller the vehicle is able to make the lap quite good. Nevertheless, there are some parts in the track that the vehicle oscillates. That would be higher values for the CTE/dt due to the fast change of the CTE in a small period (high velocities). In order to compensate this, a emergency braking controller was implemented. This controller take into consideration the speed, CTE and steer angle in order to brake and stabilize the vehicle. In addition, a PID controller was implemented to control the speed of the car taking into consideration a reference speed. In this work a reference speed was set to 60 mph. The PID parameters for the speed controller were chosen properly and then normalized to [0 - 1] values.
 
 
 ---
