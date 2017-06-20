@@ -35,7 +35,7 @@ int main()
   // TODO: Initialize the PID controllers
 
   PID steerPID;
-  steerPID.Init(0.02, 0.004, 0.9);
+  steerPID.Init(0.03, 0.004, 1.2);
 
   // Speed PI control
   PID speedPID;
@@ -68,7 +68,7 @@ int main()
           */
 
           // PID speed controller
-          double desired_speed = 70;
+          double desired_speed = 60;
           double tr_max = 1.0;
           double e_vel = (desired_speed - speed);
 
