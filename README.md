@@ -31,7 +31,7 @@ The scale factor for the Kp and Kd are finally normalized as:
 and then used in the final computation of the control signal as:
 
 ```
-  double ctrl_signal = -(this->Kp*this->p_error*kp_factor + this->Ki*this->i_error + this->Kd*this->d_error*(1.0 - kp_factor))
+  double ctrl_signal = -(this->Kp*this->p_error*norm_kp_factor + this->Ki*this->i_error + this->Kd*this->d_error*norm_kd_factor)
 ```
 
 The final tunned hyper-parameters for my PID implementation are:
