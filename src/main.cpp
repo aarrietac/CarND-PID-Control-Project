@@ -28,6 +28,9 @@ std::string hasData(std::string s) {
   return "";
 }
 
+#define MAX_CTE 4.0
+#define MAX_SPEED 60.0
+
 int main()
 {
   uWS::Hub h;
@@ -35,13 +38,9 @@ int main()
   // TODO: Initialize the PID controllers
 
   PID steerPID;
-  steerPID.Init(0.03, 0.004, 1.2);
+  steerPID.Init(0.2, 0.001, 1.0);
 
-  // Speed PI control
-  PID speedPID;
-  speedPID.Init(0.002, 0.0002, 0.003);
-
-  h.onMessage([&steerPID, &speedPID](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&steerPID](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -67,26 +66,29 @@ int main()
           * another PID controller to control the speed!
           */
 
-          // PID speed controller
-          double desired_speed = 60;
-          double tr_max = 1.0;
-          double e_vel = (desired_speed - speed);
+          double speed_factor = (MAX_SPEED - fabs(speed))/MAX_SPEED;
+          std::cout << "speed factor = " << speed_factor << std::endl;
 
-          speedPID.UpdateError(e_vel);
-          throttle_signal = -speedPID.TotalError();
+          double cte_factor = (MAX_CTE - fabs(cte))/MAX_CTE;
+          std::cout << "cte factor = " << cte_factor << std::endl;
 
-          // normalize throttle control signal
-          double trmod = fabs(throttle_signal) + 0.1*tr_max;
-          throttle_signal = tr_max*throttle_signal/trmod;
+          double norm_cte = cte_factor/(cte_factor + speed_factor);
+          double norm_speed = 1.0 - norm_cte;
 
-          // emergency braking (too much speed and steer angle in curves)
-          if (fabs(cte) > 0.7 && fabs(angle) > 4.0 && speed > 40.0) {
-            throttle_signal = -1.0;
-          }
+          double kp_factor = 0.7*(1.0 - norm_cte) + 0.3*(norm_speed);
+          double kd_factor = 0.7*(1.0 - norm_cte) + 0.3*(1.0 - norm_speed);
+
+          double norm_kp_factor = kp_factor/(kp_factor + kd_factor);
+          double norm_kd_factor = 1.0 - norm_kp_factor;
+
+          std::cout << "kp_factor = " << norm_kp_factor << std::endl;
+          std::cout << "kd_factor = " << norm_kd_factor << std::endl;
+
+          throttle_signal = 1.0*speed_factor*cte_factor;
 
           // PID steer controller
           steerPID.UpdateError(cte);
-          steer_signal = steerPID.TotalError();
+          steer_signal = steerPID.TotalError(norm_kp_factor);
 
           // normalize steer control signal
           if(steer_signal > 1.0){

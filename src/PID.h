@@ -46,7 +46,7 @@ public:
   /*
   * Calculate the total PID error.
   */
-  double TotalError();
+  double TotalError(double kp_factor);
 };
 
 #endif /* PID_H */

@@ -31,7 +31,7 @@ void PID::UpdateError(double cte) {
   this->prev_error = this->error;
 }
 
-double PID::TotalError() {
-  double ctrl_signal = -(this->Kp*this->p_error + this->Ki*this->i_error + this->Kd*this->d_error);
+double PID::TotalError(double kp_factor) {
+  double ctrl_signal = -(this->Kp*this->p_error*kp_factor + this->Ki*this->i_error + this->Kd*this->d_error*(1.0 - kp_factor));
   return  ctrl_signal;
 }
